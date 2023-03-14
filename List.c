@@ -1,5 +1,8 @@
-#include "List.h"
-
+#include "types.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
 
 void list_print(const List list) {
     Node* Iterator = list.head;

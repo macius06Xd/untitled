@@ -6,22 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "types.h"
 #ifndef UNTITLED_LIST_H
 #define UNTITLED_LIST_H
-typedef struct Node Node;
-typedef struct List List;
-struct Node {
-    void *data;
-    Node *next;
-};
 
-struct List {
-    Node * head;
-    Node * tail;
-    void (*print)(void *);
-    int (*compare)(void*,void*);
-    size_t data_size;
-};
 // prints whole list uses given print function
 void list_print (const List list );
 
