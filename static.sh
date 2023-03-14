@@ -10,6 +10,5 @@ gcc List.o -shared -o lib_List.so
 
 gcc main.o -L . -l _List -o program_dynamic
 
-ldconfig
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/paekis/dev/untitled 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/paekis/dev/untitled
