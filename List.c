@@ -1,12 +1,23 @@
 #include  "types.h"
 
 
+List* create_list(void (*print)(void *),int (*compare)(void*,void*),size_t data)
+{
+    List* lista = malloc(sizeof(List));
+    lista->head = NULL;
+    lista->tail = NULL;
+    lista->compare = compare;
+    lista->print = print;
+    lista->data_size = data;
+    return lista;
+}
+
 void list_print( List* list) {
     Node* Iterator = list->head;
     int i = 0;
     while(Iterator != NULL)
     {
-        list.print(Iterator->data);
+        list->print(Iterator->data);
         Iterator = Iterator->next;
         i++;
     }
@@ -110,7 +121,32 @@ void list_delete(List *list, int k) {
     free(iterator);
     previous->next = temp;
 }
+void list_sort(List *list) {
+    //Node current will point to head
+    struct Node *current = list->head, *index = NULL;
+    void *temp;
 
+    if(list->head == NULL) {
+        return;
+    }
+    else {
+        while(current != NULL) {
+            //Node index will point to node next to current
+            index = current->next;
+
+            while(index != NULL) {
+                //If current node's data is greater than index's node data, swap the data between them
+                if(list->compare(current->data , index->data)) {
+                    temp = current->data;
+                    current->data = index->data;
+                    index->data = temp;
+                }
+                index = index->next;
+            }
+            current = current->next;
+        }
+    }
+}
 void list_modify(List *list, int k, void *value) {
     void * target;
     Node * iterator = list->head;
@@ -149,7 +185,7 @@ List* list_split(List *list, int start, int length) {
         }
         else
         {
-            new_list_iterator->next = new_list.tail = new_node;
+            new_list_iterator->next = new_list->tail = new_node;
             new_list_iterator = new_list_iterator->next;
             new_list_iterator->next = NULL;
         }
@@ -175,32 +211,7 @@ void  list_value  (List *list, int k , void* value)
     memcpy(value,iterator->data,list->data_size);
 }
 
- void list_sort(List *list) {
-    //Node current will point to head
-    struct Node *current = list->head, *index = NULL;
-    void *temp;
 
-    if(list->head == NULL) {
-        return;
-    }
-    else {
-        while(current != NULL) {
-            //Node index will point to node next to current
-            index = current->next;
-
-            while(index != NULL) {
-                //If current node's data is greater than index's node data, swap the data between them
-                if(list->compare(current->data , index->data)) {
-                    temp = current->data;
-                    current->data = index->data;
-                    index->data = temp;
-                }
-                index = index->next;
-            }
-            current = current->next;
-        }
-    }
-}
 
 void list_apply(List * list, void(* function)(void*))
 {
@@ -311,13 +322,3 @@ void Delete_list(List* lista)
     free(lista);
 }
 
-List* create_list(void (*print)(void *),int (*compare)(void*,void*),size_t data_size)
-{
-    List* lista = malloc(sizeof(List));
-    lista->head = NULL;
-    lista->tail = NULL;
-    lista->compare = compare;
-    lista->print = print;
-    lista->data_size = data_size;
-    return lista;
-}

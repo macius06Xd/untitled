@@ -1,3 +1,6 @@
+rm *.o
+rm *.so
+rm *.a
 gcc -c List.c -o List.o
 gcc -c main.c -o main.o
 
@@ -11,4 +14,4 @@ gcc List.o -shared -o lib_List.so
 gcc main.o -L . -l _List -o program_dynamic
 
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/paekis/dev/untitled
+export LD_LIBRARY_PATH=/home/paekis/dev/untitled/untitled 

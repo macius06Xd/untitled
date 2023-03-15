@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "types.h"
 #ifndef UNTITLED_LIST_H
 #define UNTITLED_LIST_H
 
