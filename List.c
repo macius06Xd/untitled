@@ -1,11 +1,8 @@
-#include "types.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
+#include  "types.h"
 
-void list_print(const List list) {
-    Node* Iterator = list.head;
+
+void list_print( List* list) {
+    Node* Iterator = list->head;
     int i = 0;
     while(Iterator != NULL)
     {
@@ -16,8 +13,8 @@ void list_print(const List list) {
     printf("\n");
 }
 
-void list_printTail(const List list) {
-    list.print(list.tail->data);
+void list_printTail( List* list) {
+    list->print(list->tail->data);
     printf("\n");
 }
 
@@ -59,8 +56,8 @@ void list_add(List *list, void *value) {
     }
 }
 
-int list_size(const List list) {
-    Node * iterator = list.head;
+int list_size( List* list) {
+    Node * iterator = list->head;
     int i = 0;
     while(iterator!=NULL)
     {
@@ -128,8 +125,8 @@ void list_modify(List *list, int k, void *value) {
     list_sort(list);
 }
 
-List list_split(List *list, int start, int length) {
-    List new_list = {NULL , NULL , list->print,list->compare,list->data_size};
+List* list_split(List *list, int start, int length) {
+    List* new_list = create_list(list->print,list->compare,list->data_size);
     Node * iterator = list->head;
     for(int i = 0 ; i<start;i++)
     {
@@ -144,11 +141,11 @@ List list_split(List *list, int start, int length) {
             return new_list;
         }
         Node * new_node = malloc(sizeof (Node));
-        new_node->data = malloc(sizeof(new_list.data_size));
-        copy_content(&new_node->data,iterator->data,new_list.data_size);
+        new_node->data = malloc(sizeof(new_list->data_size));
+        copy_content(&new_node->data,iterator->data,new_list->data_size);
         if(i==0)
         {
-            new_list_iterator = new_list.head = new_node;
+            new_list_iterator = new_list->head = new_node;
         }
         else
         {
@@ -162,9 +159,9 @@ List list_split(List *list, int start, int length) {
     return new_list;
 }
 
-void  list_value  (List list, int k , void* value)
+void  list_value  (List *list, int k , void* value)
 {
-    Node * iterator = list.head;
+    Node * iterator = list->head;
     for(int i = 0 ; i < k ; i++)
     {
         if(iterator == NULL)
@@ -173,9 +170,9 @@ void  list_value  (List list, int k , void* value)
     }
     if(value == NULL)
     {
-        value = malloc(sizeof (list.data_size));
+        value = malloc(sizeof (list->data_size));
     }
-    memcpy(value,iterator->data,list.data_size);
+    memcpy(value,iterator->data,list->data_size);
 }
 
  void list_sort(List *list) {
@@ -232,27 +229,27 @@ __attribute__ ((visibility ("hidden"))) static void push_back(List *list , void*
 
 
 }
-List list_combine(List first, List second) {
-    List result =  {NULL , NULL , first.print,first.compare,first.data_size};
-    Node * it_first = first.head;
-    Node * it_second = second.head;
+List* list_combine(List* first, List* second) {
+    List* result = create_list(first->print,first->compare,first->data_size);
+    Node * it_first = first->head;
+    Node * it_second = second->head;
     while(it_first !=NULL || it_second !=NULL)
     {
 
         if(it_first!=NULL) {
-            if (it_second == NULL || !first.compare(it_first->data, it_second->data)) {
-                push_back(&result, it_first->data);
+            if (it_second == NULL || !first->compare(it_first->data, it_second->data)) {
+                push_back(result, it_first->data);
                 it_first = it_first->next;
             }
             else
             {
-                push_back(&result,it_second->data);
+                push_back(result,it_second->data);
                 it_second = it_second->next;
             }
         }
         else
             {
-                push_back(&result,it_second->data);
+                push_back(result,it_second->data);
                 it_second = it_second->next;
             }
 
@@ -306,4 +303,21 @@ void list_clear (List * list)
     }
     list->head = NULL;
     list->tail = NULL;
+}
+
+void Delete_list(List* lista)
+{
+    list_clear(lista);
+    free(lista);
+}
+
+List* create_list(void (*print)(void *),int (*compare)(void*,void*),size_t data_size)
+{
+    List* lista = malloc(sizeof(List));
+    lista->head = NULL;
+    lista->tail = NULL;
+    lista->compare = compare;
+    lista->print = print;
+    lista->data_size = data_size;
+    return lista;
 }

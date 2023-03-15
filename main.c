@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
 #include "List.h"
 
 
@@ -64,59 +60,59 @@ main(int argc, char **argv) {
         int d = 1;
         int e = 0;*/
 
-    List lista = {NULL, NULL, print_char, compare_char, sizeof(char)};
+    List* lista = create_list(print_char, compare_char, sizeof(char));
     char a = 'a';
     char b = 'b';
     char c = 'c';
     char d = 'd';
     char e = 'e';
 
-    list_add(&lista, &a);
-    list_add(&lista, &b);
-    list_add(&lista, &c);
-    list_add(&lista,&d);
-    list_add(&lista,&e);
+    list_add(lista, &a);
+    list_add(lista, &b);
+    list_add(lista, &c);
+    list_add(lista,&d);
+    list_add(lista,&e);
     list_print(lista);
 
-    list_delete(&lista,4);
-    list_delete(&lista,0);
-    list_delete(&lista,1);
+    list_delete(lista,4);
+    list_delete(lista,0);
+    list_delete(lista,1);
     list_print(lista);
 
-    list_add(&lista,&a);
+    list_add(lista,&a);
     list_print(lista);
     list_printTail(lista);
 
     char *value2 = malloc(sizeof(char));
     list_value(lista, 0, value2);
     list_print(lista);
-    list_apply(&lista, apply_example);
+    list_apply(lista, apply_example);
     list_print(lista);
-    List nowa_lista = list_combine(lista,lista);
+    List* nowa_lista = list_combine(lista,lista);
     list_print(nowa_lista);
-    list_filter(&nowa_lista,predicate_char,3,'e','b','k');
+    list_filter(nowa_lista,predicate_char,3,'e','b','k');
     list_print(nowa_lista);
-    list_clear(&nowa_lista);
+    list_clear(nowa_lista);
     list_print(nowa_lista);
 
     test test_a = {'a',1};
     test test_b = {'b',2};
     test test_c = {'p',-15};
-    List lista_test = {NULL, NULL, print_test, compare_test, sizeof(test)};
-    list_add(&lista_test,&test_a);
-    list_add(&lista_test,&test_b);
-    list_add(&lista_test,&test_c);
+    List *lista_test = create_list(print_test, compare_test, sizeof(test));
+    list_add(lista_test,&test_a);
+    list_add(lista_test,&test_b);
+    list_add(lista_test,&test_c);
     list_print(lista_test);
-    list_apply(&lista_test, apply_example);
+    list_apply(lista_test, apply_example);
     list_print(lista_test);
 
 
-    List combine_lista = list_combine(lista,lista_test);
+    List* combine_lista = list_combine(lista,lista_test);
     list_print(combine_lista);
-    list_sort(&combine_lista);
+    list_sort(combine_lista);
     list_print(combine_lista);
 
-    List split_lista = list_split(&combine_lista,2,3);
+    List* split_lista = list_split(combine_lista,2,3);
     list_print(split_lista);
     free(value2);
 }
