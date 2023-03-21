@@ -26,7 +26,7 @@ void create_process_tree(int depth, int max_depth) {
 int main(int argc, char *argv[]) {
 	int a = getpid();    
 if (argc < 2) {
-        return
+        return;
  }
 
     int max_depth = atoi(argv[1]);
