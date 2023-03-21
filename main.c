@@ -9,46 +9,41 @@ void create_process_tree(int depth, int max_depth) {
     }
 
     pid_t left_child_pid = fork();
-    if (left_child_pid == -1) {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    } else if (left_child_pid == 0) {
-        // child process (left)
+     if (left_child_pid == 0) {
         printf("I am process %d (left child of %d)\n", getpid(), getppid());
         create_process_tree(depth + 1, max_depth);
-        exit(EXIT_SUCCESS);
+        return;
     }
-
-    pid_t right_child_pid = fork();
-    if (right_child_pid == -1) {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    } else if (right_child_pid == 0) {
-        // child process (right)
+    pid_t right_child_pid =  fork();
+     if (right_child_pid == 0) {
         printf("I am process %d (right child of %d)\n", getpid(), getppid());
         create_process_tree(depth + 1, max_depth);
-        exit(EXIT_SUCCESS);
+        return;
     }
 
-    // parent process
-    wait(NULL);
-    wait(NULL);
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <depth>\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
+	int a = getpid();    
+if (argc < 2) {
+        return
+ }
 
     int max_depth = atoi(argv[1]);
 
-    create_process_tree(0, max_depth);
+    create_process_tree(0, max_depth-1);
 
     // print the process tree using pstree
+	if(a== getpid())
+{
+sleep(3);
     char command[256];
     sprintf(command, "pstree -p %d", getpid());
     system(command);
-
+}
+else
+{
+sleep(100);
+}
     return EXIT_SUCCESS;
 }
