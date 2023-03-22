@@ -45,5 +45,5 @@ else
 {
 sleep(100);
 }
-    return EXIT_SUCCESS;
+    return 0;
 }
