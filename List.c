@@ -327,6 +327,7 @@ void list_clear (List * list)
 void Delete_list(List* lista)
 {
     list_clear(lista);
+    pthread_mutex_destroy(&lista->mutex);
     free(lista);
 }
 
