@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/paekis/dev/untitled/cmake-build-debug",
-		"source" : "/home/paekis/dev/untitled"
+		"build" : "/home/paekis/dev/threads/untitled/cmake-build-debug",
+		"source" : "/home/paekis/dev/threads/untitled"
 	},
 	"version" : 
 	{

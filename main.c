@@ -1,5 +1,5 @@
 #include "List.h"
-
+#include <pthread.h>
 
 typedef struct test test;
 struct test{
@@ -18,16 +18,16 @@ int compare_test(void * first, void* second)
     test second_i = *((test*)second);
     return first_i.b > second_i.b;
 }
-void print_char(void* value)
+void print_int(void* value)
 {
-    char * return_value = (char*)(value);
-    printf("%c ",*return_value);
+    int * return_value = (int*)(value);
+    printf("%d ",*return_value);
 
 }
-int compare_char(void * first, void* second)
+int compare_int(void * first, void* second)
 {
-    char first_i = *((char*)first);
-    char second_i = *((char*)second);
+    int first_i = *((int*)first);
+    int second_i = *((int*)second);
     return first_i > second_i;
 }
 
@@ -48,72 +48,70 @@ int predicate_char(void *c,int parameter_number,va_list list)
     }
         return 0;
 }
-
+struct add_args
+{
+    int start;
+    int number;
+    List *lista;
+};
+void *adding_job(void *arg)
+{
+    struct add_args args = *(struct add_args*)arg;
+    int i = 0 ;
+    while (i<args.number)
+    {
+        int value = args.start+i;
+        list_add(args.lista,&value);
+        i++;
+    }
+}
+struct del_args
+{
+    int number;
+    List *lista;
+};
+void *delete_job(void* arg)
+{
+    struct del_args args = *(struct del_args*)arg;
+    int i = 0 ;
+    while(i<args.number)
+    {
+        list_delete(args.lista,1);
+        i++;
+    }
+}
 //Sorted list that can hold any type of data
 int
 main(int argc, char **argv) {
-	/*
-        List lista = {NULL, NULL, print_int, compare_int, sizeof(int)};
-        int a = 2;
-        int b = 6;
-        int c = 4;
-        int d = 1;
-        int e = 0;*/
-
-    List* lista = create_list(print_char, compare_char, sizeof(char));
-    char a = 'a';
-    char b = 'b';
-    char c = 'c';
-    char d = 'd';
-    char e = 'e';
-
-    list_add(lista, &a);
-    list_add(lista, &b);
-    list_add(lista, &c);
-    list_add(lista,&d);
-    list_add(lista,&e);
-    list_print(lista);
-
-    list_delete(lista,4);
-    list_delete(lista,0);
-    list_delete(lista,1);
-    list_print(lista);
-
+	List *lista = create_list(print_int,compare_int,sizeof(int));
+    int a = 2137;
     list_add(lista,&a);
+     pthread_t t1,t2,t3,t4,t5;
+    int number = atoi(argv[1]);
+    int start = 10000;
     list_print(lista);
-    list_printTail(lista);
-
-    char *value2 = malloc(sizeof(char));
-    list_value(lista, 0, value2);
+    struct add_args addArgs = {10000,number,lista};
+    pthread_create(&t1,NULL,adding_job,&addArgs);
+    struct add_args addArgs2 = {20000,number,lista};
+    pthread_create(&t2,NULL,adding_job,&addArgs2);
+    struct add_args addArgs3 = {30000,number,lista};
+    pthread_create(&t3,NULL,adding_job,&addArgs3);
+    struct add_args addArgs4 = {40000,number,lista};
+    pthread_create(&t4,NULL,adding_job,&addArgs4);
+    pthread_join(t1,NULL);
+    pthread_join(t2,NULL);
+    pthread_join(t3,NULL);
+    pthread_join(t4,NULL);
     list_print(lista);
-    list_apply(lista, apply_example);
+    struct del_args delArgs = {number,lista};
+    pthread_create(&t1,NULL, delete_job,&delArgs);
+    pthread_create(&t2,NULL, delete_job,&delArgs);
+    pthread_create(&t3,NULL, delete_job,&delArgs);
+    pthread_create(&t4,NULL, delete_job,&delArgs);
+    pthread_join(t1,NULL);
+    pthread_join(t2,NULL);
+    pthread_join(t3,NULL);
+    pthread_join(t4,NULL);
     list_print(lista);
-    List* nowa_lista = list_combine(lista,lista);
-    list_print(nowa_lista);
-    list_filter(nowa_lista,predicate_char,3,'e','b','k');
-    list_print(nowa_lista);
-    list_clear(nowa_lista);
-    list_print(nowa_lista);
-
-    test test_a = {'a',1};
-    test test_b = {'b',2};
-    test test_c = {'p',-15};
-    List *lista_test = create_list(print_test, compare_test, sizeof(test));
-    list_add(lista_test,&test_a);
-    list_add(lista_test,&test_b);
-    list_add(lista_test,&test_c);
-    list_print(lista_test);
-    list_apply(lista_test, apply_example);
-    list_print(lista_test);
-
-
-    List* combine_lista = list_combine(lista,lista_test);
-    list_print(combine_lista);
-    list_sort(combine_lista);
-    list_print(combine_lista);
-
-    List* split_lista = list_split(combine_lista,2,3);
-    list_print(split_lista);
-    free(value2);
 }
 

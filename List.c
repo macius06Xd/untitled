@@ -1,5 +1,5 @@
 #include  "types.h"
-
+#include <pthread.h>
 
 List* create_list(void (*print)(void *),int (*compare)(void*,void*),size_t data)
 {
@@ -9,6 +9,7 @@ List* create_list(void (*print)(void *),int (*compare)(void*,void*),size_t data)
     lista->compare = compare;
     lista->print = print;
     lista->data_size = data;
+    pthread_mutex_init(&lista->mutex,NULL);
     return lista;
 }
 
@@ -40,6 +41,7 @@ void list_add(List *list, void *value) {
     copy_content(&(new_node->data),value,list->data_size);
     Node * iterator = list->head;
     Node* pNode = NULL;
+    pthread_mutex_lock(&list->mutex);
     while(iterator != NULL  )
     {
         if(!list->compare(iterator->data,value))
@@ -65,6 +67,7 @@ void list_add(List *list, void *value) {
     {
         list->tail=new_node;
     }
+    pthread_mutex_unlock(&list->mutex);
 }
 
 int list_size( List* list) {
@@ -86,6 +89,7 @@ void free_node(Node *node) {
 void list_delete(List *list, int k) {
     Node * iterator = list->head;
     Node * previous = NULL;
+    pthread_mutex_lock(&list->mutex);
     for(unsigned int i = 0 ; i < k ; i++)
     {
         if(iterator!=NULL)
@@ -95,6 +99,7 @@ void list_delete(List *list, int k) {
         }
         else
         {
+            pthread_mutex_unlock(&list->mutex);
             return;
         }
     }
@@ -108,6 +113,7 @@ void list_delete(List *list, int k) {
         }
         free_node((list->head));
         list->head = temp;
+        pthread_mutex_unlock(&list->mutex);
         return;
     }
     if(iterator == list->tail)
@@ -115,11 +121,13 @@ void list_delete(List *list, int k) {
         free(list->tail);
         list->tail = previous;
         list->tail->next = NULL;
+        pthread_mutex_unlock(&list->mutex);
         return;
     }
     Node * temp = iterator->next;
     free(iterator);
     previous->next = temp;
+    pthread_mutex_unlock(&list->mutex);
 }
 void list_sort(List *list) {
     //Node current will point to head

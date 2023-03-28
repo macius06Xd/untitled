@@ -22,6 +22,7 @@ struct List {
     void (*print)(void *);
     int (*compare)(void*,void*);
     size_t data_size;
+    pthread_mutex_t mutex;
 };
 
 #endif //UNTITLED_TYPES_H
