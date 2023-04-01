@@ -3,6 +3,7 @@
 #include "comp_int.c"
 #include "comp_char.c"
 #include "comp_str.c"
+#include "comp_str2.c"
 #include <string.h>
 #include <stdlib.h>
 #include <semaphore.h>
@@ -42,7 +43,6 @@ void *insert_job(void *args){
 }
 
 void *delete_job(void *args){
-    printf("XD");
     int i = 0;
     struct arguments arg = *(struct arguments*)args;
     char to_insert[10];
@@ -67,7 +67,7 @@ void *delete_job(void *args){
 
 int main(){
     pthread_t t1, t2, t3, t4, t5, t6;
-    List* l = create(print_str, comp_str, sizeof(char[10]));
+    List* l = create(print_str, comp_str2, sizeof(char[10]));
     printf("Inserting initial test value\n");
     char test[10];
     memset(test, 0, 10);
