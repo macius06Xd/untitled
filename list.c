@@ -12,7 +12,7 @@ List* create(void (*print)(void*), int (*comparator)(void*, void*), int size){
     l->var_size = size;
     sem_t sem;
     l->sem = sem;
-    sem_init(&sem, 0, 1);
+    sem_init(&l->sem, 0, 1);
     return l;
 }
 

@@ -74,47 +74,52 @@ int main(){
     strcat(test,"TEST");
     strcat(test,"\0");
     insert(l, test);
+    printf("Test value inserted into list: ");
     print(l);
     //return 1;
-// {thread_id, start_number, iterations, list, semaphore }
-    struct arguments args1 = {1, 0 , 10000, l};
-    struct arguments args2 = {2, 10000, 10000, l};
-    struct arguments args3 = {3, 20000, 10000, l};
-    //struct arguments args4 = {4, 30000, 10000, l};
-    //struct arguments args5 = {5, 40000, 10000, l};
-    //struct arguments args6 = {6, 50000, 10000, l};
+// {thread_id, start_number, iterations, list }
+    struct arguments args1 = {1, 10000, 10000, l};
+    struct arguments args2 = {2, 20000, 10000, l};
+    struct arguments args3 = {3, 30000, 10000, l};
+    struct arguments args4 = {4, 40000, 10000, l};
+    struct arguments args5 = {5, 50000, 10000, l};
+    struct arguments args6 = {6, 60000, 10000, l};
 
     printf("Beggining of insert operations\n");
 
     pthread_create(&t1, NULL, insert_job, &args1);
     pthread_create(&t2, NULL, insert_job, &args2);
     pthread_create(&t3, NULL, insert_job, &args3);
-    //pthread_create(&t4, NULL, insert_job, &args4);
-    //pthread_create(&t5, NULL, insert_job, &args5);
-    //pthread_create(&t6, NULL, insert_job, &args6);
+    pthread_create(&t4, NULL, insert_job, &args4);
+    pthread_create(&t5, NULL, insert_job, &args5);
+    pthread_create(&t6, NULL, insert_job, &args6);
 
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     pthread_join(t3, NULL);
-    //pthread_join(t4, NULL);
-    //pthread_join(t5, NULL);
-    //pthread_join(t6, NULL);
+    pthread_join(t4, NULL);
+    pthread_join(t5, NULL);
+    pthread_join(t6, NULL);
 
+    //print(l);
+    
     printf("Beginning of delete operations\n");
 
     pthread_create(&t1, NULL, delete_job, &args1);
     pthread_create(&t2, NULL, delete_job, &args2);
     pthread_create(&t3, NULL, delete_job, &args3);
-    //pthread_create(&t4, NULL, delete_job, &args4);
-    //pthread_create(&t5, NULL, delete_job, &args5);
-    //pthread_create(&t6, NULL, delete_job, &args6);
+    pthread_create(&t4, NULL, delete_job, &args4);
+    pthread_create(&t5, NULL, delete_job, &args5);
+    pthread_create(&t6, NULL, delete_job, &args6);
 
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     pthread_join(t3, NULL);
-    //pthread_join(t4, NULL);
-    //pthread_join(t5, NULL);
-    //pthread_join(t6, NULL);
+    pthread_join(t4, NULL);
+    pthread_join(t5, NULL);
+    pthread_join(t6, NULL);
+    
+    printf("Value that was left out in a list: ");
     print(l);
     clear(l);
     return 0;

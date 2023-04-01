@@ -7,7 +7,7 @@ int comp_str2(void *p, void *q){
     int R = strlen(r);
     int c = strcmp(l, r);
     int c2 = c*(-1);
-    return c2;
+    return c;
     if (L>R)
 		return 1;
 
