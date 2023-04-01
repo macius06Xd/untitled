@@ -12,7 +12,7 @@ List* create(void (*print)(void*), int (*comparator)(void*, void*), int size){
     l->var_size = size;
     sem_t sem;
     l->sem = sem;
-    sem_init(&sem, 0, 1);
+    sem_init(&l->sem, 0, 1);
     return l;
 }
 
@@ -32,10 +32,12 @@ void insert(List *l, void *Data){
     memcpy(D,Data,l->var_size);
     new_node->data = D;
     new_node->next = NULL;
-    sem_wait(&l->sem);
 
+    sem_wait(&(l->sem));
     if(l->head==NULL){// empty list
         l->head=new_node;
+            sem_post(&l->sem);
+
         return;
     }
     Node* iter = l->head;
@@ -50,6 +52,7 @@ void insert(List *l, void *Data){
             new_node->next = iter->next;
             iter->next = new_node;
         }
+        sem_post(&(l->sem));
         return;
     }
     while( iter->next!=NULL ){
@@ -58,10 +61,14 @@ void insert(List *l, void *Data){
             if(iter == l->head){
                 l->head = new_node;
                 new_node->next = iter;
+                    sem_post(&(l->sem));
+
                 return;
             }
             previous->next = new_node;
             new_node->next = iter;
+                sem_post(&(l->sem));
+
             return;        
         }
         else { //new data is bigger or equal, travel
@@ -77,55 +84,39 @@ void insert(List *l, void *Data){
     else{
         iter->next = new_node;
     }
-    sem_post(&l->sem);
+   sem_post(&(l->sem));
 }
 
 void remove_from_list(List *l, void *Data){
-    
-    int comp2 = l->comparator(Data,l->head->data);
-    sem_wait(&l->sem);
-    if(l->head==NULL) {  //empty list
+    sem_wait(&(l->sem));
+    Node * iter = l->head;
+    Node * prev = NULL;
+    while(iter != NULL)
+    {
+        if(l->comparator(iter->data,Data)==0)
+            break;
+        prev = iter;
+        iter = iter->next;
+    }
+    if(iter == NULL) {
+        sem_post(&l->sem);
         return;
     }
-    if(l->head->next == NULL && comp2 == 0){//one elem list
-        free(l->head);
-        l->head = NULL;
+    if( prev == NULL)
+    {
+        l->head = iter->next;
     }
-      
-    else{//2+ elem list
-        Node* iter = l->head;
-        Node* previous = NULL;
-        while (iter->next != NULL) // go through whole list 
-        {
-            int comp = l->comparator(Data,iter->data);// iter.data = data ?
-            if(comp == 0){ 
-                
-                if(iter == l->head){
-                    l->head = iter->next;
-                    free(iter);
-                    iter = l->head;
-                    continue;
-                }
-                else{
-                    previous->next = iter->next;
-                    free(iter);
-                    iter = previous->next;
-                    continue;
-                }         
-            }
-            previous = iter; 
-            iter = iter->next;
-        } 
-        int comp = l->comparator(Data,iter->data);
-        if(comp == 0 ){ // checkup for last elem
-            previous->next = NULL;
-            free(iter);
-        }
+    else
+    {
+        prev->next = iter->next;
     }
+    free(iter);
     sem_post(&l->sem);
+
 }
 
-void print(List *l){    
+void print(List *l){
+    sem_wait(&(l->sem));
     if(l->head==NULL) {        
         return;
     }
@@ -139,4 +130,5 @@ void print(List *l){
         }
         
     }
+    sem_post(&l->sem);
 }
