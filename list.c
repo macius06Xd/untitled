@@ -36,6 +36,8 @@ void insert(List *l, void *Data){
 
     if(l->head==NULL){// empty list
         l->head=new_node;
+            sem_post(&l->sem);
+
         return;
     }
     Node* iter = l->head;
@@ -58,10 +60,14 @@ void insert(List *l, void *Data){
             if(iter == l->head){
                 l->head = new_node;
                 new_node->next = iter;
+                    sem_post(&l->sem);
+
                 return;
             }
             previous->next = new_node;
             new_node->next = iter;
+                sem_post(&l->sem);
+
             return;        
         }
         else { //new data is bigger or equal, travel
