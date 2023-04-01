@@ -19,8 +19,6 @@ struct arguments
 };
 
 void *insert_job(void *args){
-    printf("XD");
-
     int i = 0;
     struct arguments arg = *(struct arguments*)args;
     char to_insert[10];
@@ -34,6 +32,7 @@ void *insert_job(void *args){
         strcat(to_insert,"_");
         sprintf(num, "%d", number_to_insert);
         strcat(to_insert, num);
+        strcat(to_insert,"\0");
         insert(arg.l, to_insert);
         //printf("%s\n", to_insert);
         memset(to_insert, 0, 7);
@@ -43,6 +42,7 @@ void *insert_job(void *args){
 }
 
 void *delete_job(void *args){
+    printf("XD");
     int i = 0;
     struct arguments arg = *(struct arguments*)args;
     char to_insert[10];
@@ -56,6 +56,7 @@ void *delete_job(void *args){
         strcat(to_insert,"_");
         sprintf(num, "%d", number_to_insert);
         strcat(to_insert, num);
+        strcat(to_insert,"\0");
         remove_from_list(arg.l, to_insert);
         //printf("%s\n", to_insert);
         memset(to_insert, 0, 7);
@@ -66,13 +67,15 @@ void *delete_job(void *args){
 
 int main(){
     pthread_t t1, t2, t3, t4, t5, t6;
-
     List* l = create(print_str, comp_str, sizeof(char[10]));
     printf("Inserting initial test value\n");
     char test[10];
+    memset(test, 0, 10);
     strcat(test,"TEST");
+    strcat(test,"\0");
     insert(l, test);
     print(l);
+    //return 1;
 // {thread_id, start_number, iterations, list, semaphore }
     struct arguments args1 = {1, 0 , 10000, l};
     struct arguments args2 = {2, 10000, 10000, l};
@@ -84,7 +87,6 @@ int main(){
     printf("Beggining of insert operations\n");
 
     pthread_create(&t1, NULL, insert_job, &args1);
-    printf("XDD");
     pthread_create(&t2, NULL, insert_job, &args2);
     pthread_create(&t3, NULL, insert_job, &args3);
     //pthread_create(&t4, NULL, insert_job, &args4);
@@ -115,4 +117,5 @@ int main(){
     //pthread_join(t6, NULL);
     print(l);
     clear(l);
+    return 0;
 }

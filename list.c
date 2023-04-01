@@ -26,7 +26,6 @@ void clear(List *l){
 }
 
 void insert(List *l, void *Data){    
-    
     Node* new_node = (Node*)malloc(sizeof(Node));
     void* D = (void*)malloc(l->var_size);
     memcpy(D,Data,l->var_size);
@@ -52,6 +51,7 @@ void insert(List *l, void *Data){
             new_node->next = iter->next;
             iter->next = new_node;
         }
+        sem_post(&l->sem);
         return;
     }
     while( iter->next!=NULL ){
@@ -87,10 +87,10 @@ void insert(List *l, void *Data){
 }
 
 void remove_from_list(List *l, void *Data){
-    
-    int comp2 = l->comparator(Data,l->head->data);
     sem_wait(&l->sem);
+    int comp2 = l->comparator(Data,l->head->data);
     if(l->head==NULL) {  //empty list
+        sem_post(&l->sem);
         return;
     }
     if(l->head->next == NULL && comp2 == 0){//one elem list
