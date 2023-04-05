@@ -14,6 +14,7 @@ List* create_list(void (*print)(void *),int (*compare)(void*,void*),size_t data)
 }
 
 void list_print( List* list) {
+    pthread_mutex_lock(&list->mutex);
     Node* Iterator = list->head;
     int i = 0;
     while(Iterator != NULL)
@@ -23,11 +24,14 @@ void list_print( List* list) {
         i++;
     }
     printf("\n");
+    pthread_mutex_unlock(&list->mutex);
 }
 
 void list_printTail( List* list) {
+    pthread_mutex_lock(&list->mutex);
     list->print(list->tail->data);
     printf("\n");
+    pthread_mutex_unlock(&list->mutex);
 }
 
 void copy_content(void **target, void *source, size_t data_size) {
@@ -71,6 +75,7 @@ void list_add(List *list, void *value) {
 }
 
 int list_size( List* list) {
+    pthread_mutex_lock(&list->mutex);
     Node * iterator = list->head;
     int i = 0;
     while(iterator!=NULL)
@@ -129,7 +134,8 @@ void list_delete(List *list, int k) {
     previous->next = temp;
     pthread_mutex_unlock(&list->mutex);
 }
-void list_sort(List *list) {
+static void list_sort(List *list) {
+    
     //Node current will point to head
     struct Node *current = list->head, *index = NULL;
     void *temp;
@@ -156,6 +162,7 @@ void list_sort(List *list) {
     }
 }
 void list_modify(List *list, int k, void *value) {
+    pthread_mutex_lock(&list->mutex);
     void * target;
     Node * iterator = list->head;
     for(int i = 0 ; i<k ; i++)
@@ -167,15 +174,20 @@ void list_modify(List *list, int k, void *value) {
     target = iterator->data;
     copy_content(&target,value,list->data_size);
     list_sort(list);
+    pthread_mutex_unlock(&list->mutex);
 }
 
 List* list_split(List *list, int start, int length) {
+    pthread_mutex_lock(&list->mutex);
     List* new_list = create_list(list->print,list->compare,list->data_size);
     Node * iterator = list->head;
     for(int i = 0 ; i<start;i++)
     {
         if(iterator== NULL)
+        {
             return new_list;
+        pthread_mutex_unlock(&list->mutex);
+        }
         iterator = iterator->next;
     }
     Node * new_list_iterator = NULL;
@@ -183,6 +195,7 @@ List* list_split(List *list, int start, int length) {
     {
         if(iterator == NULL) {
             return new_list;
+            pthread_mutex_unlock(&list->mutex);
         }
         Node * new_node = malloc(sizeof (Node));
         new_node->data = malloc(sizeof(new_list->data_size));
@@ -201,15 +214,20 @@ List* list_split(List *list, int start, int length) {
 
     }
     return new_list;
+    pthread_mutex_unlock(&list->mutex);
 }
 
 void  list_value  (List *list, int k , void* value)
 {
+    pthread_mutex_lock(&list->mutex);
     Node * iterator = list->head;
     for(int i = 0 ; i < k ; i++)
     {
         if(iterator == NULL)
+        {
             return;
+            pthread_mutex_unlock(&list->mutex);
+            }
         iterator = iterator->next;
     }
     if(value == NULL)
@@ -217,12 +235,14 @@ void  list_value  (List *list, int k , void* value)
         value = malloc(sizeof (list->data_size));
     }
     memcpy(value,iterator->data,list->data_size);
+    pthread_mutex_unlock(&list->mutex);
 }
 
 
 
 void list_apply(List * list, void(* function)(void*))
 {
+    pthread_mutex_lock(&list->mutex);
     Node * iterator = list->head;
     while(iterator!=NULL)
     {
@@ -230,6 +250,7 @@ void list_apply(List * list, void(* function)(void*))
         iterator = iterator->next;
     }
     list_sort(list);
+    pthread_mutex_unlock(&list->mutex);
 }
 
 __attribute__ ((visibility ("hidden"))) static void push_back(List *list , void* value)
@@ -249,6 +270,8 @@ __attribute__ ((visibility ("hidden"))) static void push_back(List *list , void*
 
 }
 List* list_combine(List* first, List* second) {
+    pthread_mutex_lock(&list->first);
+    pthread_mutex_lock(&list->second);
     List* result = create_list(first->print,first->compare,first->data_size);
     Node * it_first = first->head;
     Node * it_second = second->head;
@@ -274,10 +297,13 @@ List* list_combine(List* first, List* second) {
 
     }
     return result;
+    pthread_mutex_unlock(&first->mutex);
+    pthread_mutex_unlock(&second->mutex);
 }
 
 void list_filter(List * list , int(*predicate)(void*,int,va_list),int arg_number,...)
 {
+    pthread_mutex_lock(&list->mutex);
     Node * iterator = list->head;
     Node * previous = NULL;
     va_list arguments;
@@ -309,10 +335,12 @@ void list_filter(List * list , int(*predicate)(void*,int,va_list),int arg_number
         }
     }
     va_end(arguments);
+    pthread_mutex_unlock(&list->mutex);
 }
 
 void list_clear (List * list)
 {
+    pthread_mutex_lock(&list->mutex);
     Node * iterator = list->head;
     while(iterator != NULL)
     {
@@ -322,6 +350,7 @@ void list_clear (List * list)
     }
     list->head = NULL;
     list->tail = NULL;
+    pthread_mutex_unlock(&list->mutex);
 }
 
 void Delete_list(List* lista)
