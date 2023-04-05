@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/paekis/dev/threads/untitled/List.c" "CMakeFiles/untitled.dir/List.c.o" "gcc" "CMakeFiles/untitled.dir/List.c.o.d"
-  "/home/paekis/dev/threads/untitled/main.c" "CMakeFiles/untitled.dir/main.c.o" "gcc" "CMakeFiles/untitled.dir/main.c.o.d"
+  "/home/paekis/dev/List.c" "CMakeFiles/untitled.dir/List.c.o" "gcc" "CMakeFiles/untitled.dir/List.c.o.d"
+  "/home/paekis/dev/main.c" "CMakeFiles/untitled.dir/main.c.o" "gcc" "CMakeFiles/untitled.dir/main.c.o.d"
   )
 
 # Targets to which this target links.

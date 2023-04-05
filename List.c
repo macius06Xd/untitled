@@ -39,13 +39,14 @@ void copy_content(void **target, void *source, size_t data_size) {
 }
 
 void list_add(List *list, void *value) {
+	pthread_mutex_lock(&list->mutex);
     Node * new_node = (Node*)malloc(sizeof(Node));
     new_node->data = malloc(list->data_size);
     new_node->next = NULL;
     copy_content(&(new_node->data),value,list->data_size);
     Node * iterator = list->head;
     Node* pNode = NULL;
-    pthread_mutex_lock(&list->mutex);
+   
     while(iterator != NULL  )
     {
         if(!list->compare(iterator->data,value))
@@ -185,8 +186,9 @@ List* list_split(List *list, int start, int length) {
     {
         if(iterator== NULL)
         {
+            pthread_mutex_unlock(&list->mutex);
             return new_list;
-        pthread_mutex_unlock(&list->mutex);
+
         }
         iterator = iterator->next;
     }
@@ -194,8 +196,9 @@ List* list_split(List *list, int start, int length) {
     for(int i = 0 ; i < length ;i++)
     {
         if(iterator == NULL) {
-            return new_list;
             pthread_mutex_unlock(&list->mutex);
+            return new_list;
+
         }
         Node * new_node = malloc(sizeof (Node));
         new_node->data = malloc(sizeof(new_list->data_size));
@@ -213,8 +216,9 @@ List* list_split(List *list, int start, int length) {
         iterator=iterator->next;
 
     }
-    return new_list;
     pthread_mutex_unlock(&list->mutex);
+    return new_list;
+
 }
 
 void  list_value  (List *list, int k , void* value)
@@ -225,8 +229,9 @@ void  list_value  (List *list, int k , void* value)
     {
         if(iterator == NULL)
         {
-            return;
             pthread_mutex_unlock(&list->mutex);
+            return;
+
             }
         iterator = iterator->next;
     }
@@ -270,8 +275,8 @@ __attribute__ ((visibility ("hidden"))) static void push_back(List *list , void*
 
 }
 List* list_combine(List* first, List* second) {
-    pthread_mutex_lock(&list->first);
-    pthread_mutex_lock(&list->second);
+    pthread_mutex_lock(&first->mutex);
+    pthread_mutex_lock(&second->mutex);
     List* result = create_list(first->print,first->compare,first->data_size);
     Node * it_first = first->head;
     Node * it_second = second->head;
@@ -296,9 +301,10 @@ List* list_combine(List* first, List* second) {
             }
 
     }
-    return result;
     pthread_mutex_unlock(&first->mutex);
     pthread_mutex_unlock(&second->mutex);
+    return result;
+
 }
 
 void list_filter(List * list , int(*predicate)(void*,int,va_list),int arg_number,...)

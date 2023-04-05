@@ -1,6 +1,5 @@
-CMakeFiles/untitled.dir/List.c.o: \
- /home/paekis/dev/threads/untitled/List.c /usr/include/stdc-predef.h \
- /home/paekis/dev/threads/untitled/types.h /usr/include/stdio.h \
+CMakeFiles/untitled.dir/List.c.o: /home/paekis/dev/List.c \
+ /usr/include/stdc-predef.h /home/paekis/dev/types.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \

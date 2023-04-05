@@ -44,19 +44,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /home/paekis/.cache/JetBrains/RemoteDev/dist/104c8749b5a35_CLion-231.8109.4/bin/cmake/linux/x64/bin/cmake
+CMAKE_COMMAND = /home/paekis/.cache/JetBrains/RemoteDev/dist/1466a3f304df6_CLion-231.8109.141/bin/cmake/linux/x64/bin/cmake
 
 # The command to remove a file.
-RM = /home/paekis/.cache/JetBrains/RemoteDev/dist/104c8749b5a35_CLion-231.8109.4/bin/cmake/linux/x64/bin/cmake -E rm -f
+RM = /home/paekis/.cache/JetBrains/RemoteDev/dist/1466a3f304df6_CLion-231.8109.141/bin/cmake/linux/x64/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/paekis/dev/threads/untitled
+CMAKE_SOURCE_DIR = /home/paekis/dev
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/paekis/dev/threads/untitled/cmake-build-debug
+CMAKE_BINARY_DIR = /home/paekis/dev/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/untitled.dir/depend.make
@@ -70,32 +70,32 @@ include CMakeFiles/untitled.dir/progress.make
 include CMakeFiles/untitled.dir/flags.make
 
 CMakeFiles/untitled.dir/main.c.o: CMakeFiles/untitled.dir/flags.make
-CMakeFiles/untitled.dir/main.c.o: /home/paekis/dev/threads/untitled/main.c
+CMakeFiles/untitled.dir/main.c.o: /home/paekis/dev/main.c
 CMakeFiles/untitled.dir/main.c.o: CMakeFiles/untitled.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/paekis/dev/threads/untitled/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/untitled.dir/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/untitled.dir/main.c.o -MF CMakeFiles/untitled.dir/main.c.o.d -o CMakeFiles/untitled.dir/main.c.o -c /home/paekis/dev/threads/untitled/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/paekis/dev/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/untitled.dir/main.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/untitled.dir/main.c.o -MF CMakeFiles/untitled.dir/main.c.o.d -o CMakeFiles/untitled.dir/main.c.o -c /home/paekis/dev/main.c
 
 CMakeFiles/untitled.dir/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/untitled.dir/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/paekis/dev/threads/untitled/main.c > CMakeFiles/untitled.dir/main.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/paekis/dev/main.c > CMakeFiles/untitled.dir/main.c.i
 
 CMakeFiles/untitled.dir/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/untitled.dir/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/paekis/dev/threads/untitled/main.c -o CMakeFiles/untitled.dir/main.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/paekis/dev/main.c -o CMakeFiles/untitled.dir/main.c.s
 
 CMakeFiles/untitled.dir/List.c.o: CMakeFiles/untitled.dir/flags.make
-CMakeFiles/untitled.dir/List.c.o: /home/paekis/dev/threads/untitled/List.c
+CMakeFiles/untitled.dir/List.c.o: /home/paekis/dev/List.c
 CMakeFiles/untitled.dir/List.c.o: CMakeFiles/untitled.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/paekis/dev/threads/untitled/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/untitled.dir/List.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/untitled.dir/List.c.o -MF CMakeFiles/untitled.dir/List.c.o.d -o CMakeFiles/untitled.dir/List.c.o -c /home/paekis/dev/threads/untitled/List.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/paekis/dev/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/untitled.dir/List.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/untitled.dir/List.c.o -MF CMakeFiles/untitled.dir/List.c.o.d -o CMakeFiles/untitled.dir/List.c.o -c /home/paekis/dev/List.c
 
 CMakeFiles/untitled.dir/List.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/untitled.dir/List.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/paekis/dev/threads/untitled/List.c > CMakeFiles/untitled.dir/List.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/paekis/dev/List.c > CMakeFiles/untitled.dir/List.c.i
 
 CMakeFiles/untitled.dir/List.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/untitled.dir/List.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/paekis/dev/threads/untitled/List.c -o CMakeFiles/untitled.dir/List.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/paekis/dev/List.c -o CMakeFiles/untitled.dir/List.c.s
 
 # Object files for target untitled
 untitled_OBJECTS = \
@@ -109,7 +109,7 @@ untitled: CMakeFiles/untitled.dir/main.c.o
 untitled: CMakeFiles/untitled.dir/List.c.o
 untitled: CMakeFiles/untitled.dir/build.make
 untitled: CMakeFiles/untitled.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/paekis/dev/threads/untitled/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable untitled"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/paekis/dev/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable untitled"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/untitled.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -121,6 +121,6 @@ CMakeFiles/untitled.dir/clean:
 .PHONY : CMakeFiles/untitled.dir/clean
 
 CMakeFiles/untitled.dir/depend:
-	cd /home/paekis/dev/threads/untitled/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/paekis/dev/threads/untitled /home/paekis/dev/threads/untitled /home/paekis/dev/threads/untitled/cmake-build-debug /home/paekis/dev/threads/untitled/cmake-build-debug /home/paekis/dev/threads/untitled/cmake-build-debug/CMakeFiles/untitled.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/paekis/dev/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/paekis/dev /home/paekis/dev /home/paekis/dev/cmake-build-debug /home/paekis/dev/cmake-build-debug /home/paekis/dev/cmake-build-debug/CMakeFiles/untitled.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/untitled.dir/depend
 

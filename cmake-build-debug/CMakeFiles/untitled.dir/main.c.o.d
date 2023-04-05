@@ -1,6 +1,5 @@
-CMakeFiles/untitled.dir/main.c.o: \
- /home/paekis/dev/threads/untitled/main.c /usr/include/stdc-predef.h \
- /home/paekis/dev/threads/untitled/List.h /usr/include/stdio.h \
+CMakeFiles/untitled.dir/main.c.o: /home/paekis/dev/main.c \
+ /usr/include/stdc-predef.h /home/paekis/dev/List.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -50,9 +49,8 @@ CMakeFiles/untitled.dir/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/string.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/strings.h /home/paekis/dev/threads/untitled/types.h \
- /usr/include/pthread.h /usr/include/sched.h \
- /usr/include/x86_64-linux-gnu/bits/sched.h \
+ /usr/include/strings.h /home/paekis/dev/types.h /usr/include/pthread.h \
+ /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
  /usr/include/x86_64-linux-gnu/bits/cpu-set.h /usr/include/time.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
