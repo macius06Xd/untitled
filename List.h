@@ -41,7 +41,7 @@ List* list_split (List *list , int start , int length);
 void  list_value  (List* list, int k,void * value);
 
 //sorts list
-void  list_sort(List *list);
+static void  list_sort(List *list);
 
 // applies given function to every list value
 void list_apply(List * list, void(* function)(void*));

@@ -87,7 +87,7 @@ main(int argc, char **argv) {
     int a = 2137;
     list_add(lista,&a);
      pthread_t t1,t2,t3,t4,t5;
-    int number = atoi(argv[1]);
+    int number = 100;
     int start = 10000;
     list_print(lista);
     struct add_args addArgs = {10000,number,lista};
