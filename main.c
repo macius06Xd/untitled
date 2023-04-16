@@ -3,20 +3,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include "List.h"
 
 #pragma comment(lib,"ws2_32.lib")
 
-#define  MAX_USERS 10
-SOCKET users [MAX_USERS];
+int compareSockets(void* l, void * r){
+    SOCKET L = *(SOCKET*) l;
+    SOCKET R = *(SOCKET*) r;
+
+    if(L==R){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+}
+
+List* users;
+
 int activeUsers = 0;
 void dispatch_messages(SOCKET sender, char message [2040])
 {
-    for(int i = 0 ; i < activeUsers;i++)
-    {
-        if (users[i] != sender)
-        {
-            send(users[i] , message , strlen(message), 0);
-        }
+    Node * iterator = users->head;
+    while(iterator!=NULL){
+        send(iterator , message , strlen(message), 0);
+        iterator=iterator->next;
     }
 }
 
@@ -54,14 +65,19 @@ connection_handler(void *socket_desc) {
     } while(read_size > 2); /* Wait for empty line */
 
     fprintf(stderr, "Client disconnected\n");
-
+    remove_from_list(users, sock);
     closesocket(sock);
 
     pthread_exit(NULL);
 }
 
-int
-main(int argc, char *argv[]) {
+void sendMessage(void* user, int i, va_list args){
+    char message[2040] = va_arg(args, char*);
+    send(*(SOCKET*)user , message , strlen(message), 0);
+}
+
+int main(int argc, char *argv[]) {
+    users = create_list(NULL, compareSockets, sizeof(SOCKET));
     WSADATA wsa;
     SOCKET listenfd = INVALID_SOCKET, connfd = INVALID_SOCKET;
     struct sockaddr_in serv_addr;
@@ -86,7 +102,8 @@ main(int argc, char *argv[]) {
 
     for (;;) {
         connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
-        users[activeUsers] = connfd;
+        //users[activeUsers] = connfd;
+        list_add(users, connfd);
         activeUsers++;
         fprintf(stderr, "Connection accepted\n");
         pthread_create(&thread_id, NULL, connection_handler , (void *) &connfd);
