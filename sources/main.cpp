@@ -3,7 +3,6 @@
 #include <functional>
 #include <queue>
 #include <chrono>
-#include "Source.cpp"
 namespace std {
 	template<>
 	struct hash<dim::Vector3>
@@ -28,7 +27,7 @@ namespace std {
 }
 std::vector<dim::Vector3> generate_pyramid_vertices(dim::Vector3 start, int size, float square_size)
 {
-	jajko cos = jajko();
+	
 	std::vector<dim::Vector3> Points;
 	int level_size = size;
 	dim::Vector3 point = start;
@@ -133,18 +132,18 @@ std::vector<dim::Vector3> possibleMoves(dim::Object *robot,dim::Vector3 position
 bool is_collision(dim::Vector3 pos, dim::Object* robot, std::vector<dim::Object*> objects) {
 
 
-	// Check for collision with other objects
-	for (dim::Object* obj : objects) {
-		if (obj != robot)
-		{
-			if (collides(robot, pos, obj)) {
-				return true;
-			}
+// Check for collision with other objects
+for (dim::Object* obj : objects) {
+	if (obj != robot)
+	{
+		if (collides(robot, pos, obj)) {
+			return true;
 		}
 	}
+}
 
-	// No collision
-	return false;
+// No collision
+return false;
 }
 
 #include <queue>
@@ -224,17 +223,35 @@ std::vector<dim::Vector3> findpath(dim::Vector3 start, dim::Vector3 goal, dim::O
 			dim::Vector3(-move_dist, 0, 0),
 			dim::Vector3(0, move_dist, 0),
 			dim::Vector3(0, -move_dist, 0),
-			dim::Vector3(0, 0, move_dist),
-			dim::Vector3(0, 0, -move_dist)
 		};
-		for (auto& move : moves) {
+		std::vector<dim::Vector3> Amoves;
+
+		auto was_Collision = false;
+		for (auto& move : moves)
+		{
+			if (is_collision(current_node->pos + move, robot, objects))
+			{
+				was_Collision = true;
+			}
+			else if (is_collision(current_node->pos + move + dim::Vector3(0,0,-1), robot, objects) || current_node->pos.z < 0.1)
+			{
+				Amoves.push_back(move);
+				}
+			}
+		if (was_Collision)
+		{
+			Amoves.push_back(dim::Vector3(0, 0, 1));
+		}
+
+		
+		for (auto& move : Amoves) {
 			dim::Vector3 next_pos = current_node->pos + move;
 
 			// Check if the next position is valid (i.e., within bounds and not colliding with any object)
 			if (next_pos.x >= -40 && next_pos.x <= 40 &&
 				next_pos.y >= -40 && next_pos.y <= 40 &&
-				next_pos.z >= 0 && next_pos.z <= 40 &&
-				!is_collision(next_pos,robot,objects)) {
+				next_pos.z >= 0 && next_pos.z <= 40 )
+				 {
 
 				// Calculate the cost of moving to the next position
 				double cost = current_node->g + heuristic(current_node->pos, next_pos);
@@ -333,7 +350,7 @@ int main()
 	auto start_time = std::chrono::high_resolution_clock::now();
 
 	// Find the path
-	std::vector<dim::Vector3> path = findpath(robot->get_position(), dim::Vector3(0, -30, 10), robot, pyramid_objects);
+	std::vector<dim::Vector3> path;
 
 	// Stop the timer
 	auto end_time = std::chrono::high_resolution_clock::now();
@@ -345,15 +362,8 @@ int main()
 
  start_time = std::chrono::high_resolution_clock::now();
 
-	// Find the path
-	path = findpath(robot->get_position(), dim::Vector3(0, -30, 10), robot, pyramid_objects);
+		 path = findpath(robot->get_position(), pyramid_points[pyramid_points.size()-1] + dim::Vector3(0,0,4), robot, pyramid_objects);
 
-	// Stop the timer
-	 end_time = std::chrono::high_resolution_clock::now();
-	 elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-
-	// Print the elapsed time in milliseconds
-	std::cout << "Pathfinding took " << elapsed_time.count() << " milliseconds.\n";
 
 	while (dim::Window::running)
 	{
