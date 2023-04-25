@@ -9,13 +9,7 @@ class ChatWidget(QWidget):
         super().__init__()
         # Create a TCP socket
         self.username = None;
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        # Connect to the server
-        self.sock.connect(('127.0.0.1', 5000))
-        # Start receive_messages thread
-        recv_thread = threading.Thread(target=self.receive_messages)
-        recv_thread.start()
         # Create a vertical layout
         layout = QVBoxLayout()
 
@@ -36,7 +30,13 @@ class ChatWidget(QWidget):
 
         # Set the layout
         self.setLayout(layout)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+        # Connect to the server
+        self.sock.connect(('127.0.0.1', 5000))
+        # Start receive_messages thread
+        recv_thread = threading.Thread(target=self.receive_messages)
+        recv_thread.start()
     def send_messages(self):
             message =  self.line_edit.text()
             if(len(message)!= 0):

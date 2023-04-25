@@ -1,15 +1,14 @@
-#include <winsock2.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <pthread.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include "List.h"
 
-#pragma comment(lib,"ws2_32.lib")
-
 int compareSockets(void* l, void * r){
-    SOCKET L = *(SOCKET*) l;
-    SOCKET R = *(SOCKET*) r;
+    int L = *(int*) l;
+    int R = *(int*) r;
 
     if(L==R){
         return 0;
@@ -22,32 +21,38 @@ int compareSockets(void* l, void * r){
 List* users;
 
 int activeUsers = 0;
-void dispatch_messages(SOCKET sender, char message [2040])
-{
-    Node * iterator = users->head;
-    while(iterator!=NULL){
-        send(iterator , message , strlen(message), 0);
-        iterator=iterator->next;
+
+int sendMessage(void* user, int i, va_list args){
+    int sender = va_arg(args,int);
+    char* message = va_arg(args, char*);
+    if(sender != *(int*)user) {
+        send(*(int *) user, message, strlen(message), 0);
     }
+    return 0;
 }
 
-void *
-connection_handler(void *socket_desc) {
+void dispatch_messages(int sender, char message [2040])
+{
+    list_apply(users,sendMessage,2,sender,message);
+}
+
+
+void *connection_handler(void *socket_desc) {
 
     /* Get the socket descriptor */
-    SOCKET sock = *(SOCKET*)socket_desc;
+    int sock = *(int*)socket_desc;
     int read_size;
     char *message , client_message[2000] , response[2040];
     char username [30];
 
-    message = "Please provide me your username\n";
+    message = "Please provide me your username in the first message\n";
     send(sock , message , strlen(message), 0);
     read_size = recv(sock , client_message , 2000 , 0);
     client_message[read_size] = '\0';
     strcpy(username,client_message);
 
     /* Send some messages to the client */
-    message = "Greetings! I am your connection handler\n Now type something and i shall repeat what you type\n Empty line will close the connection\n";
+    message = "Greetings!";
     send(sock , message , strlen(message), 0);
 
     do {
@@ -65,31 +70,20 @@ connection_handler(void *socket_desc) {
     } while(read_size > 2); /* Wait for empty line */
 
     fprintf(stderr, "Client disconnected\n");
-    remove_from_list(users, sock);
-    closesocket(sock);
+    remove_from_list(users, (void *) &sock);
+    close(sock);
 
     pthread_exit(NULL);
 }
 
-void sendMessage(void* user, int i, va_list args){
-    char message[2040] = va_arg(args, char*);
-    send(*(SOCKET*)user , message , strlen(message), 0);
-}
-
 int main(int argc, char *argv[]) {
-    users = create_list(NULL, compareSockets, sizeof(SOCKET));
-    WSADATA wsa;
-    SOCKET listenfd = INVALID_SOCKET, connfd = INVALID_SOCKET;
-    struct sockaddr_in serv_addr;
 
+    int listenfd = 0, connfd = 0;
+    struct sockaddr_in serv_addr;
+    users = create_list(NULL, compareSockets, sizeof(connfd));
     pthread_t thread_id;
 
-    if (WSAStartup(MAKEWORD(2,2),&wsa) != 0) {
-        printf("WSAStartup failed. Error Code : %d", WSAGetLastError());
-        return 1;
-    }
-
-    listenfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
     memset(&serv_addr, '0', sizeof(serv_addr));
 
     serv_addr.sin_family = AF_INET;
@@ -102,13 +96,11 @@ int main(int argc, char *argv[]) {
 
     for (;;) {
         connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
-        //users[activeUsers] = connfd;
-        list_add(users, connfd);
+        list_add(users, (void *) &connfd);
         activeUsers++;
         fprintf(stderr, "Connection accepted\n");
         pthread_create(&thread_id, NULL, connection_handler , (void *) &connfd);
     }
 
-    WSACleanup();
     return 0;
 }
