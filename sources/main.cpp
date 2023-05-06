@@ -131,14 +131,22 @@ std::vector<dim::Vector3> possibleMoves(dim::Object *robot,dim::Vector3 position
 	}
 	return possibleMoves;
 }
-bool is_collision(dim::Vector3 pos, dim::Object* robot, std::vector<dim::Object*> objects) {
+bool is_collision(dim::Vector3 pos, dim::Object* robot, std::vector<dim::Object*> objects, dim::Object * block , dim::Object * partner) {
 
 
 // Check for collision with other objects
 for (dim::Object* obj : objects) {
-	if (obj != robot)
+	if (obj != robot && obj != block &&  obj !=partner)
 	{
 		if (collides(robot, pos, obj)) {
+			return true;
+		}
+		if(block != NULL)
+		if (collides(block, pos + block->get_position() - robot->get_position(), obj)) {
+			return true;
+		}
+		if(partner!=NULL)
+		if (collides(partner, pos+partner->get_position() - robot->get_position(), obj)) {
 			return true;
 		}
 	}
@@ -148,12 +156,15 @@ for (dim::Object* obj : objects) {
 return false;
 }
 
+
+std::mutex block_adding;
 #include <queue>
 #include <unordered_map>
 #include <vector>
 #include <functional>
 #include <cmath>
 
+const int robots = 2;
 struct Node {
 	dim::Vector3 pos;
 	double g, h;
@@ -182,7 +193,9 @@ struct NodeEqual {
 
 
 
-std::vector<dim::Vector3> findpath(dim::Vector3 start, dim::Vector3 goal, dim::Object* robot, std::vector<dim::Object*> objects) {
+
+
+std::vector<dim::Vector3> findpath(dim::Vector3 start, dim::Vector3 goal, dim::Object* robot, std::vector<dim::Object*> objects, dim::Object* block , dim::Object* partner) {
 	// Define a lambda function to calculate the heuristic distance between two points
 	auto heuristic = [](dim::Vector3 a, dim::Vector3 b) {
 		return std::abs(a.x - b.x) + std::abs(a.y - b.y) + std::abs(a.z - b.z);
@@ -236,11 +249,11 @@ std::vector<dim::Vector3> findpath(dim::Vector3 start, dim::Vector3 goal, dim::O
 		auto was_Collision = false;
 		for (auto& move : moves)
 		{
-			if (is_collision(current_node->pos + move, robot, objects))
+			if (is_collision(current_node->pos + move, robot, objects,block,partner))
 			{
 				was_Collision = true;
 			}
-			else if (is_collision(current_node->pos + move + dim::Vector3(0,0,-1), robot, objects) || current_node->pos.z < 0.1)
+			else if (is_collision(current_node->pos + move + dim::Vector3(0,0,-1), robot, objects,block,partner) || current_node->pos.z < 0.1)
 			{
 				Amoves.push_back(move);
 				}
@@ -285,21 +298,6 @@ std::vector<dim::Vector3> findpath(dim::Vector3 start, dim::Vector3 goal, dim::O
 		// Add the current node to the closed set
 		closed[current_node] = current_node;
 	}
-	if (closest_node) {
-		// Build the path from start to closest_node
-		// Build the path by following the parent pointers
-		std::vector<dim::Vector3> path;
-		auto current_node = closest_node;
-		while (current_node) {
-			path.push_back(current_node->pos);
-			current_node = current_node->parent;
-		}
-		std::reverse(path.begin(), path.end());
-
-
-
-		return path;
-	}
 	// Return an empty path if no path was found
 	return std::vector<dim::Vector3>();
 }
@@ -309,7 +307,7 @@ int pyramid_count = 0;
 
 auto  pyramid_points = generate_pyramid_vertices( 5, 4);
 auto top = pyramid_points.back();
-bool myArray[100] = {false};
+bool myArray[100] = { false };
 std::mutex point_searching;
 
 	dim::Vector3 closestpoint(dim::Vector3 object) {
@@ -353,6 +351,7 @@ std::mutex point_searching;
 		bool hold_block = false;
 		dim::Vector3 target_position;
 		int block_number;
+		int path_count = 1;
 		Robot(dim::Mesh mesh , dim::Material material) : dim::Object(mesh,material)
 		{
 			
@@ -366,7 +365,7 @@ std::mutex point_searching;
 			
 			while (1)
 			{
-				std::lock_guard<std::mutex> lock(myAction);
+				myAction.lock();
 				if (block != NULL)
 				{
 					double now = clock();
@@ -374,14 +373,14 @@ std::mutex point_searching;
 					begin_time = now;
 					delta = delta / CLOCKS_PER_SEC;
 					delta_acum += delta;
-					if (delta_acum > 0.5f)
+					if (delta_acum > 0.02f)
 					{
-						delta_acum -= 0.5f;
+						delta_acum = 0;
 						if (hold_block == false)
 						{
-							if (cos < path.size())
-							{
-								path = findpath(this->get_position(), target_position, this, pyramid_objects);
+
+							
+								path = findpath(this->get_position(), target_position, this, pyramid_objects,NULL,NULL);
 								if (path.size() > 1)
 								{
 									if (path[1].z > this->get_position().z)
@@ -391,59 +390,79 @@ std::mutex point_searching;
 									this->move((path[1] - this->get_position()));
 									if (this->get_position() == target_position)
 									{
+										hold_block = true;
 										dim::Vector3 point = closestpoint(pyramid_points[block_number]);
-										target_position = block->get_position() + point * 6 + this->get_position()-block->get_position();
+										this->material = dim::Material(dim::Color(1, 1, 1), 0.1f, 0.5f, 0.6f, 30.f);
+										target_position = pyramid_points[block_number] + (point * 8) + this->get_position()-block->get_position();
+										path.clear();
 									}
 										
 								}
-							}
+							
 						}
 						else
 						{
 							if (partner->hold_block && captain)
 							{
-								if (cos < path.size())
-								{
-									path = findpath(this->get_position(), target_position, this, pyramid_objects);
-									if (path.size() > 1)
+								if(path.empty())
+									path = findpath(this->get_position(), target_position, this, pyramid_objects, block, partner);
+									
+									if (path.size() > path_count)
 									{
-										if (path[1].z > this->get_position().z)
+										if (path[path_count].z > this->get_position().z)
 											this->material = dim::Material(dim::Color(0, 1, 0), 0.1f, 0.5f, 0.6f, 30.f);
 										else
 											this->material = dim::Material(dim::Color(0, 1, 1), 0.1f, 0.5f, 0.6f, 30.f);
-											this->move((path[1] - this->get_position()));
-											partner->move((path[1] - this->get_position()));
+										auto position = this->get_position();
 
+										this->move((path[path_count]- position));
+										block->move(path[path_count] - position);
+										partner->move((path[path_count] - position));
+
+										path_count++;
+										if (this->get_position() == target_position)
+										{
+											pyramid_count++;
+											dim::Object* object_1 = new dim::Object(dim::Mesh::Cube(), dim::Material(dim::Color(0, 0, 1), 0.1f, 0.5f, 0.6f, 30.f));
+											object_1->set_size(dim::Vector3(4, 4, 4));
+											path_count = 0;
+											pyramid_objects[2 + pyramid_count]->set_position(15, -10, 0);
+											block->set_position(pyramid_points[pyramid_count - 1]);
+											block = NULL;
+											hold_block = false;
+											captain = false;
+											partner->hold_block = false;
+											partner->block = NULL;
+											
+										}
 									}
-								}
+								
 							}
 						}
 					}
 				}
 				else
 				{
+
 					point_searching.lock();
-					if (myArray[pyramid_count] == false)
+					if (myArray[pyramid_count] == false && partner->captain != true)
 					{
 						block_number = pyramid_count;
-						std::lock_guard<std::mutex> lock(partner->myAction);
+						partner->block_number = block_number;
 						block = pyramid_objects[2 + pyramid_count];
 						partner->block = block;
 						captain = true;
 						partner->captain = false;
-						dim::Vector3 point = closestpoint(block->get_position());
+						dim::Vector3 point = closestpoint(pyramid_points[pyramid_count]);
 						std::swap(point.x, point.y);
-						target_position = block->get_position() + point * 6;
-						partner->target_position = block->get_position() + point * -6;
-						
+						target_position = block->get_position() + point * 4;
+						partner->target_position = block->get_position() + point * -4;
+
 					}
-
-
-
 					point_searching.unlock();
 				}
 
-
+				myAction.unlock();
 			}
 		}
 	};
@@ -487,16 +506,21 @@ int main()
 	pyramid_objects.back()->set_position(dim::Vector3(0, -10, 0));
 	pyramid_objects.push_back(robot2);
 	pyramid_objects.back()->set_position(dim::Vector3(10, -10, 0));
+	int d = 0;
+	while (d < pyramid_points.size())
+	{
 
+		dim::Object* object_1 = new dim::Object(dim::Mesh::Cube(), dim::Material(dim::Color(0, 0, 1), 0.1f, 0.5f, 0.6f, 30.f));
+		object_1->set_size(dim::Vector3(4, 4, 4));
+		pyramid_objects.push_back(object_1);
+		pyramid_objects.back()->set_position(dim::Vector3(100, 100, 100));
+		d++;
+	}
+	pyramid_objects[2]->set_position(15, -10, 0);
 	int p = pyramid_objects.size();
 	int k = pyramid_objects.size();// Main loop
-	int d = 0;
 	double delta_acum = 0;
-	
-	dim::Object* object_1 = new dim::Object(dim::Mesh::Cube(), dim::Material(dim::Color(0, 0, 1), 0.1f, 0.5f, 0.6f, 30.f));
-	object_1->set_size(dim::Vector3(4, 4, 4));
-	pyramid_objects.push_back(object_1);
-	pyramid_objects.back()->set_position(15,-10,0);
+
 
 	auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -522,11 +546,7 @@ int main()
 
 	while (dim::Window::running)
 	{
-		double now = clock();
-		delta = now - begin_time;
-		begin_time = now;
-		delta = delta / CLOCKS_PER_SEC;
-		delta_acum += delta;
+
 		// Check events
 		sf::Event sf_event;
 		while (dim::Window::poll_event(sf_event))
@@ -547,11 +567,12 @@ int main()
 		int i = 0;
 		for (auto& object : pyramid_objects)
 		{
-			;
+			if (i < robots + pyramid_count+1)
+			{
+				scene.draw(*object);
+				i++;
+			}
 		}
-		scene.draw(*pyramid_objects[2]);
-		scene.draw(*robot);
-		scene.draw(*robot2);
 		// Display the scenes to the window
 		scene.display();
 
