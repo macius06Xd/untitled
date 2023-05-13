@@ -72,6 +72,7 @@ void list_add(List *list, void *value) {
     {
         list->tail=new_node;
     }
+    fprintf(stderr,"new port added %d" , *(int*)new_node ->data);
     pthread_mutex_unlock(&list->mutex);
 }
 
@@ -279,12 +280,14 @@ pthread_mutex_lock(&list->mutex);
     Node * iterator = list->head;
     Node * previous = NULL;
     va_list arguments;
-    va_start(arguments,arg_number);
+
         while(iterator!=NULL){
-        predicate(iterator,arg_number,arguments);
+            va_start(arguments,arg_number);
+        predicate(iterator->data,arg_number,arguments);
         iterator=iterator->next;
+            va_end(arguments);
     }
-    va_end(arguments);
+
     pthread_mutex_unlock(&list->mutex);
 }
 
