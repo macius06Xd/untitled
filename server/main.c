@@ -99,7 +99,7 @@ void *connection_handler(void *desc) {
     } while(read_size > 0); /* Wait for empty line */
 
     fprintf(stderr, "Client disconnected\n");
-    remove_from_list(users, (void *) &sock);
+    remove_from_list(users, (void *) desc);
     close(sock);
 
     pthread_exit(NULL);
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
         desc->pipe_enter = fd[1];
         desc->pipe_end = fd[0];
         fprintf(stderr , "user %d\n",*connfd);
-        list_add(users, (void *)fd);
+        list_add(users, (void *)desc);
         activeUsers++;
         fprintf(stderr, "Connection accepted\n");
         pthread_create(&thread_id, NULL, connection_handler , (void *)desc);
