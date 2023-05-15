@@ -33,6 +33,7 @@ int sendMessage(void* user, int i, va_list args){
     char* message = va_arg(args, char*);
     client_desc userdesc =  *(client_desc *)user;
     fprintf(stderr, "Writing to pipe\n");
+    if(sender.socket!=userdesc.socket)
     write(userdesc.pipe_enter,message,2000);
 
     return 0;
@@ -80,9 +81,10 @@ void *connection_handler(void *desc) {
             read_size = recv(sock, response, 2000, 0);
             fprintf(stderr, "ClientMessage %s \n", response);
             client_message[read_size] = '\0';
-            strcat(response, username);
-            strcat(response, ": ");
-            strcat(response, client_message);
+		char * response_copy = strdup(response);
+            sprintf(response,"%s:%s",username,response_copy);
+		free (response_copy);
+
             /* Send the message back to client */
             dispatch_messages(descirptors, response);
         }
@@ -132,6 +134,7 @@ int main(int argc, char *argv[]) {
         desc->socket = *connfd;
         desc->pipe_enter = fd[1];
         desc->pipe_end = fd[0];
+	free(fd);
         fprintf(stderr , "user %d\n",*connfd);
         list_add(users, (void *)desc);
         activeUsers++;
