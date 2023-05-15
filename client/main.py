@@ -5,9 +5,10 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLine
 
 
 class ChatWidget(QWidget):
-    def __init__(self):
+    def __init__(self,app):
         super().__init__()
         # Create a TCP socket
+        self.app  = app
         self.username = None;
 
         # Create a vertical layout
@@ -31,12 +32,13 @@ class ChatWidget(QWidget):
         # Set the layout
         self.setLayout(layout)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+        self.flag = 0
         # Connect to the server
         self.sock.connect(('127.0.0.1', 5000))
         # Start receive_messages thread
-        recv_thread = threading.Thread(target=self.receive_messages)
-        recv_thread.start()
+        self.recv_thread = threading.Thread(target=self.receive_messages)
+        self.recv_thread.start()
+
     def send_messages(self):
             message =  self.line_edit.text()
             if(len(message)>0):
@@ -48,11 +50,19 @@ class ChatWidget(QWidget):
                 self.text_edit.verticalScrollBar().setValue(self.text_edit.verticalScrollBar().maximum())
                 self.line_edit.clear()
             else:
+                self.flag = 1
+                self.recv_thread.join()
                 self.sock.close()
-                QCoreApplication.Quit()
+                app.quit()
     def receive_messages(self):
+        self.sock.settimeout(1)
         while True:
-            server_reply = self.sock.recv(2000)
+            if self.flag:
+                break
+            try:
+                server_reply = self.sock.recv(2000)
+            except socket.timeout:
+                continue
             if not server_reply:
                 break
             self.text_edit.append(server_reply.decode())
@@ -61,7 +71,7 @@ class ChatWidget(QWidget):
 if __name__ == '__main__':
 
     app = QApplication([])
-    widget = ChatWidget()
+    widget = ChatWidget(app)
 
     widget.show()
     app.exec_()
