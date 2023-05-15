@@ -39,7 +39,7 @@ class ChatWidget(QWidget):
         recv_thread.start()
     def send_messages(self):
             message =  self.line_edit.text()
-            if(len(message)!= 0):
+            if(len(message)>0):
                 self.sock.sendall(message.encode())
                 if(self.username is None):
                     self.username = message
@@ -47,8 +47,9 @@ class ChatWidget(QWidget):
                     self.text_edit.append(f"{self.username}: {message}")
                 self.text_edit.verticalScrollBar().setValue(self.text_edit.verticalScrollBar().maximum())
                 self.line_edit.clear()
-
-
+            else:
+                self.sock.close()
+                QCoreApplication.Quit()
     def receive_messages(self):
         while True:
             server_reply = self.sock.recv(2000)

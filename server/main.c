@@ -79,6 +79,8 @@ void *connection_handler(void *desc) {
         ret = select(maxfd + 1, &readfds, NULL, NULL, NULL);
         if (FD_ISSET(sock, &readfds)) {
             read_size = recv(sock, response, 2000, 0);
+		if(read_size==0)
+			break;
             fprintf(stderr, "ClientMessage %s \n", response);
             client_message[read_size] = '\0';
 		char * response_copy = strdup(response);
